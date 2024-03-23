@@ -193,8 +193,12 @@ static struct s3c2410_platform_nand real6410_nand_info = {
 
 static struct platform_device *real6410_devices[] __initdata = {
 	&real6410_device_eth,
+#ifdef CONFIG_REAL6410_SD_CH0
 	&s3c_device_hsmmc0,
+#endif
+#ifdef CONFIG_REAL6410_SD_CH1
 	&s3c_device_hsmmc1,
+#endif
 	&s3c_device_fb,
 	&s3c_device_nand,
 	&s3c_device_adc,
@@ -206,7 +210,7 @@ static void __init real6410_map_io(void)
 	u32 tmp;
 
 	s3c64xx_init_io(NULL, 0);
-	s3c24xx_init_clocks(12000000);
+	s3c64xx_set_xtal_freq(12000000);
 	s3c24xx_init_uarts(real6410_uartcfgs, ARRAY_SIZE(real6410_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 
