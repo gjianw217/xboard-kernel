@@ -1,0 +1,158 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Samsung's S5PV210 SoC device tree source
+ *
+ * Copyright (c) 2013-2014 Samsung Electronics, Co. Ltd.
+ *
+ * Mateusz Krawczuk <m.krawczuk@partner.samsung.com>
+ * Tomasz Figa <t.figa@samsung.com>
+ *
+ * Board device tree source for Samsung Goni board.
+ */
+
+/dts-v1/;
+// #include <dt-bindings/input/input.h>
+#include "s5pv210.dtsi"
+
+/ {
+	model = "OK210 based on S5PV210";
+	compatible = "ok210", "samsung,s5pv210";
+
+	chosen {
+		// bootargs = "console=ttySAC2,115200n8 root=/dev/mmcblk0p2 rw rootwait ignore_loglevel earlyprintk";
+		bootargs = "console=ttySAC2,115200n8 root=/dev/nfs nfsroot=192.168.3.150:/srv/gblw210_rootfs,v3,tcp ip=192.168.3.170:::255.255.255.0:gblw210:eth0::off rw rootwait ignore_loglevel earlyprintk";
+	};
+
+	memory@20000000 {
+		device_type = "memory";
+		reg = <0x30000000 0x20000000>;
+	};
+
+	ethernet@88000000 {
+		compatible = "davicom,dm9000";
+		reg = <0x88000000 0x2 
+				0x88000004 0x2>;
+		interrupt-parent = <&gph1>;
+		interrupts = <1 4>;
+		local-mac-address = [b2 2c 7c 04 74 43];
+		davicom,no-eeprom;
+		clocks = <&clocks CLK_SROMC>;
+		clock-names = "sromc";
+	};
+
+};
+
+&xxti {
+    clock-frequency = <24000000>;
+};
+
+&xusbxti {
+	clock-frequency = <24000000>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&rtc {
+	status = "okay";
+};
+
+&sdhci0 {
+	bus-width = <4>;
+	pinctrl-0 = <&sd0_clk &sd0_cmd &sd0_cd &sd0_bus1 &sd0_bus4>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+// &hsotg {
+// 	vusb_a-supply = <&ldo3_reg>;
+// 	vusb_d-supply = <&ldo8_reg>;
+// 	dr_mode = "peripheral";
+// 	status = "okay";
+// };
+
+&usbphy {
+	status = "okay";
+};
+
+&ehci {
+	status = "okay";
+};
+
+&ohci {
+	status = "okay";
+};
+
+&pwm {
+	samsung,pwm-outputs = <3>;
+};
+
+&i2c1 {
+	samsung,i2c-sda-delay = <100>;
+	samsung,i2c-max-bus-freq = <400000>;
+	samsung,i2c-slave-addr = <0x10>;
+	status = "okay";
+};
+
+&i2c2 {
+	samsung,i2c-sda-delay = <100>;
+	samsung,i2c-max-bus-freq = <400000>;
+	samsung,i2c-slave-addr = <0x10>;
+	status = "okay";
+};
+
+&spi0 { // 靠近网卡的MCP2515
+	num-cs = <1>;
+	cs-gpios = <&gpb 1 0>;
+	status = "okay";
+
+	spidev@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spidev";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+		controller-data {
+			samsung,spi-feedback-delay = <0>;
+		};
+	};
+};
+
+&spi1 { // 靠近复位的MCP2515
+	num-cs = <1>;
+	cs-gpios = <&gpb 5 0>;
+	status = "okay";
+
+	spidev@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spidev";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+		controller-data {
+			samsung,spi-feedback-delay = <0>;
+		};
+	};
+};
+
+&pinctrl0 {
+	eint7: ext-int7 {
+		samsung,pins = "gph0-7";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
+	};
+};
